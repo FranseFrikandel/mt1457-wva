@@ -216,9 +216,8 @@ ax4.set(title='Fuel Rack over Time',
         ylabel='Fuel rack [%]',
         xlabel='Time [s]')
 ax4.grid()
-
 fig.tight_layout()
-fig.savefig('resultaat_vaarsim_mt1457.png')
+fig.savefig('grafieken/resultaat_vaarsim_mt1457.png')
 
 fig6, ax6 = plt.subplots()
 ax6.plot(mytime[5:tmax-5], n_e[5:tmax-5])
@@ -227,7 +226,7 @@ ax6.set(title='RPM over Time',
         xlabel='Time [s]',
         ylabel='RPM')
 ax6.grid()
-fig6.savefig("n_p-n_e.png")
+fig6.savefig("grafieken/n_p-n_e.png")
 
 fig7, ax7 = plt.subplots()
 ax7.plot(v_s[5:tmax-5], R[5:tmax-5])
@@ -235,7 +234,7 @@ ax7.set(title='Resistanccee over ship velocity',
         xlabel='Ship velocity',
         ylabel='Resistance')
 ax7.grid()
-fig7.savefig("Snelheid-weerstand.png")
+fig7.savefig("grafieken/Snelheid-weerstand.png")
 
 fig8, ax8 = plt.subplots()
 ax8.plot(v_a[5:tmax-5], F_prop[5:tmax-5])
@@ -243,7 +242,7 @@ ax8.set(title='Thrust over v_a',
         xlabel='Advance Velocity',
         ylabel='Thrust')
 ax8.grid()
-fig8.savefig("v_advance-thrust.png")
+fig8.savefig("grafieken/v_advance-thrust.png")
 
 fig9, ax9 = plt.subplots()
 ax9.plot(n_p[5:tmax-5], M_prop[5:tmax-5])
@@ -251,7 +250,7 @@ ax9.set(title='Propellor moment over propellor RPM',
         xlabel='propellor RPM',
         ylabel='Moment')
 ax9.grid()
-fig9.savefig("n_p-M_prop.png")
+fig9.savefig("grafieken/n_p-M_prop.png")
 
 fig10, ax10 = plt.subplots()
 ax10.plot(n_e[5:tmax-5], M_b[5:tmax-5])
@@ -259,7 +258,7 @@ ax10.set(title='RPM over Time',
         xlabel='Time [s]',
         ylabel='RPM')
 ax10.grid()
-fig10.savefig("n_e-M_b.png")
+fig10.savefig("grafieken/n_e-M_b.png")
 
 fig11, ax11 = plt.subplots()
 ax11.plot(mytime[5:tmax-5], P_E[5:tmax-5], label="Engine power") # TODO: Zo te zien is dit eigenlijk verloren vermogen in de weerstand
@@ -271,7 +270,7 @@ ax11.set(title='Power over Time',
         ylabel='RPM')
 ax11.legend()
 ax11.grid()
-fig11.savefig("P-t.png")
+fig11.savefig("grafieken/P-t.png")
 
 fig12, ax12 = plt.subplots()
 ax12.plot(mytime[5:tmax-5], np.zeros(tmax-10) + eta_e)
@@ -283,4 +282,4 @@ ax12.set(title='Efficiency over Time',
         ylabel='Efficiency [%]')
 ax12.legend()
 ax12.grid()
-fig12.savefig("efficiency-time.png")
+fig12.savefig("grafieken/efficiency-time.png")
