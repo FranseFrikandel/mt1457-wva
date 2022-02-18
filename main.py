@@ -287,7 +287,7 @@ fig10.savefig("grafieken/n_e-M_b.png")
 
 fig11, ax11 = plt.subplots()
 ax11.plot(mytime[5:tmax-5], P_E[5:tmax-5], label="Towing power")
-ax11.plot(mytime[5:tmax-5], P_d[5:tmax-5])
+ax11.plot(mytime[5:tmax-5], P_d[5:tmax-5], label="Propeller power")
 ax11.plot(mytime[5:tmax-5], P_b[5:tmax-5], label="Brake power")
 ax11.plot(mytime[5:tmax-5], Q_f_l[5:tmax-5], label="Thermal energy per ignition")
 ax11.set(title='Power over Time',
