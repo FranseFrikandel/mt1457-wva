@@ -1,20 +1,18 @@
-# -*- coding: utf-8 -*-
 """
 Created on Wed Nov  8 11:02:26 2017
-
-    Viskotter simulation file
+                                                                      
+    Viskotter simulation file                                         
     Version 1.0H
-    J. Rodrigues Monteiro, based on matlab code from P. de Vos
-    Delft University of Technology
-    3ME / MTT / SDPO / ME
-
+    J. Rodrigues Monteiro, based on matlab code from P. de Vos                                                         
+    Delft University of Technology                                    
+    3ME / MTT / SDPO / ME                                             
+                                                                      
 History:
     20171108I: initial python version    JRM
     20200108J: simps integration         EU
               no graphing endpoits...   EU
-    20200228H: simps correctie           EU
+    20200228H: simps correctie           EU          
 """
-from cProfile import label
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -22,10 +20,8 @@ import matplotlib.pyplot as plt
 from scipy import integrate
 
 # ----------- parameters for simulation --------------------------------------
-tmax = 36000            # simulation time [s]
+tmax = 36000           # simulation time [s]
 dt = 1                  # timestep [s]
-# Time
-mytime = np.linspace(0, tmax-1, tmax) # TODO: Stappen zijn niet correct opgedeeld in dt
 
 # fuel properties
 LHV = 42700             # Lower Heating Value [kJ/kg]
@@ -41,7 +37,6 @@ c1 = 1500               # resistance coefficient c1 in R = c1*vs^2
 v_s0 = 6.5430           # ship design speed [m/s]
 t = 0.1600              # thrust deduction factor[-]
 w = 0.2000              # wake factor [-]
-eta_h = (1-t)/(1-w)
 print('ship data loaded')
 
 # propellor data
@@ -83,19 +78,6 @@ xvals = np.linspace(0, tmax-1, tmax)
 ov_X_set = np.interp(xvals, iv_t_control, X_parms)
 ov_Y_set = np.interp(xvals, iv_t_control, Y_parms)
 
-# # initial values
-# in_p = 3.2830                                                           # initial rpm
-# iv_t_control = np.array([0, 100, 200, 300, 400, 500, 600, 700, 800])
-# X_parms = (np.sin(iv_t_control)+1)*0.5                                         # % maximum fuelrack
-# Y_parms = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1])                         # disturbance factor
-
-# # simulation control parameters
-# xvals = np.linspace(0, tmax-1, tmax)
-# # ov_X_set = np.interp(xvals, iv_t_control, X_parms)
-# # ov_Y_set = np.interp(xvals, iv_t_control, Y_parms)
-# ov_X_set = (np.sin(0.05*mytime)+1)*0.5
-# ov_Y_set = np.interp(xvals, iv_t_control, Y_parms)
-
 # --------- Start van de funtie definities
 
 def R_schip(snelheid_schip):
@@ -106,6 +88,8 @@ def R_schip(snelheid_schip):
 
 # -------- Make arrays -------------------------------------------------------
 
+# Time
+mytime = np.linspace(0, tmax-1, tmax)
 # Velocity of the ship [m/s]
 v_s = np.zeros(tmax)
 v_s[0] = v_s0
@@ -142,12 +126,10 @@ P_p = np.zeros(tmax)              # Propellor power [kW]
 P_b = np.zeros(tmax)              # Engine brake power [kW]
 P_T = np.zeros(tmax)              # Thrust power [kW]
 P_E = np.zeros(tmax)              # Engine power [kW]
-P_d = np.zeros(tmax)              # Delivered propellor power
 J = np.zeros(tmax)                # Advance ratio [-]
-Q_f_l = np.zeros(tmax)            # Heat energy per power stroke
 
-#---------- Run simulation -----------------------------------------------
 
+# ------------- Run simulation -----------------------------------------------
 for k in range(tmax-1):
     # advance ratio
     J[k+1] = ((v_a[k] / n_p[k]) / D_p)
@@ -164,7 +146,7 @@ for k in range(tmax-1):
     # Calculate acceleration from resulting force --> ship speed & tr.distance
     sum_a[k+1] = ((F_prop[k] - (R[k] / (1-t)))/m_ship)
     #v_s_new = (np.trapz(sum_a[k:k+2], dx=0.01)) + v_s[k]
-    v_s[k+1]  = integrate.simps(sum_a[:k+2], dx=0.01)+v_s0 # TODO: Waarom dx=0.01?
+    v_s[k+1]  = integrate.simps(sum_a[:k+2], dx=0.01)+v_s0
     #v_s[k+1] = v_s_new
     Rsp[k+1] = R[k] / (1-t)
     # Traveled distance
@@ -187,7 +169,6 @@ for k in range(tmax-1):
     # Fuel consumption
     out_fc[k+1] =  integrate.simps(m_flux_f[:k+2], dx=0.01)+out_fc[0]
     Q_f = X * m_f_nom * LHV
-    Q_f_l[k] = Q_f
     W_e = Q_f * eta_e
     # Brake power
     P_b[k+1] = (W_e * n_e[k+1] * i) / k_es
@@ -199,11 +180,9 @@ for k in range(tmax-1):
 v_s[0]=v_s0
 v_s[1]=v_s0
 
-# Extra calculations (Not necessary to do inside the loop, and way faster when doing directly too)
-eta_o = P_T / P_O
-P_d = P_O/eta_R
-
 # -------------- Plot Figure -------------------------------------------------
+
+%matplotlib inline
 
 # create figure with four subplots
 fig = plt.figure(figsize=(10, 20))
@@ -236,100 +215,5 @@ ax4.set(title='Fuel Rack over Time',
         xlabel='Time [s]')
 ax4.grid()
 fig.tight_layout()
-fig.savefig('grafieken/resultaat_vaarsim_mt1457.png')
-
-fig6, ax6 = plt.subplots()
-ax6.plot(mytime[5:tmax-5], n_e[5:tmax-5], label="Engine RPM")
-ax6.plot(mytime[5:tmax-5], n_p[5:tmax-5], label="Propeller RPM")
-ax6.set(title='RPM over Time',
-        xlabel='Time [s]',
-        ylabel='RPM')
-ax6.legend()
-ax6.grid()
-fig6.tight_layout()
-fig6.savefig("grafieken/n_p-n_e.png")
-
-fig7, ax7 = plt.subplots()
-ax7.plot(v_s[5:tmax-5], R[5:tmax-5])
-ax7.set(title='Resistance over ship velocity',
-        xlabel='Ship velocity',
-        ylabel='Resistance')
-ax7.grid()
-fig7.tight_layout()
-fig7.savefig("grafieken/Snelheid-weerstand.png")
-
-fig8, ax8 = plt.subplots()
-ax8.plot(v_a[5:tmax-5], F_prop[5:tmax-5])
-ax8.set(title='Thrust over advance velocity',
-        xlabel='Advance Velocity',
-        ylabel='Thrust')
-ax8.grid()
-fig8.tight_layout()
-fig8.savefig("grafieken/v_advance-thrust.png")
-
-fig9, ax9 = plt.subplots()
-ax9.plot(n_p[5:tmax-5], M_prop[5:tmax-5])
-ax9.set(title='Propellor torque over propellor RPM',
-        xlabel='propellor RPM',
-        ylabel='Torque [Nm]')
-ax9.grid()
-fig9.tight_layout()
-fig9.savefig("grafieken/n_p-M_prop.png")
-
-fig10, ax10 = plt.subplots()
-ax10.plot(n_e[5:tmax-5], M_b[5:tmax-5])
-ax10.set(title='Engine torque over engine RPM',
-        xlabel='RPM',
-        ylabel='Torque [Nm]')
-ax10.grid()
-fig10.tight_layout()
-fig10.savefig("grafieken/n_e-M_b.png")
-
-fig11, ax11 = plt.subplots()
-ax11.plot(mytime[5:tmax-5], P_E[5:tmax-5], label="Towing power")
-ax11.plot(mytime[5:tmax-5], P_d[5:tmax-5])
-ax11.plot(mytime[5:tmax-5], P_b[5:tmax-5], label="Brake power")
-ax11.plot(mytime[5:tmax-5], Q_f_l[5:tmax-5], label="Thermal energy per ignition")
-ax11.set(title='Power over Time',
-        xlabel='Time [s]',
-        ylabel='RPM')
-ax11.legend()
-ax11.grid()
-fig11.tight_layout()
-fig11.savefig("grafieken/P-t.png")
-
-fig12, ax12 = plt.subplots()
-ax12.plot(mytime[5:tmax-5], np.zeros(tmax-10) + eta_e*100, label="Engine efficiency")
-ax12.plot(mytime[5:tmax-5], np.zeros(tmax-10) + eta_h*100, label="Hull efficiency")
-ax12.plot(mytime[5:tmax-5], np.zeros(tmax-10) + eta_TRM*100, label="Transmission efficiency")
-ax12.plot(mytime[5:tmax-5], eta_o[5:tmax-5], label="Open water propeller efficiency")
-ax12.set(title='Efficiency over Time',
-        xlabel='Time [s]',
-        ylabel='Efficiency [%]')
-ax12.legend()
-ax12.grid()
-fig12.tight_layout()
-fig12.savefig("grafieken/efficiency-time.png")
-
-fig13, ax13 = plt.subplots()
-ax13.plot(P_p[5:tmax-5], eta_o[5:tmax-5]*100, label="Open water propeller efficiency")
-ax13.plot(P_b[5:tmax-5], np.zeros(tmax-10) + eta_e*100, label="Engine efficiency")
-ax13.set(title='Efficiency over Power',
-        xlabel='Power [W]',
-        ylabel='Efficiency [%]')
-ax13.grid()
-ax13.legend()
-fig13.tight_layout()
-fig13.savefig("grafieken/efficiency-power.png")
-
-fig14, ax14 = plt.subplots()
-ax14.plot(mytime[5:tmax-5], ov_X_set[5:tmax-5]*100, color="tab:blue")
-ax14_2 = ax14.twinx()
-ax14_2.plot(mytime[5:tmax-5], n_e[5:tmax-5], color="tab:orange")
-ax14.set(title='Fuel rack and RPM over time')
-ax14.set_xlabel('Time [s]')
-ax14.set_ylabel('Fuel rack [%]', color="tab:blue")
-ax14_2.set_ylabel("Engine RPM", color="tab:orange")
-ax14.grid()
-fig14.tight_layout()
-fig14.savefig("grafieken/P-F-t.png")
+fig.savefig('resultaat_vaarsim_mt1457.png')
+plt.show()
