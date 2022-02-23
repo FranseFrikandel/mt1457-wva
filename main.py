@@ -99,9 +99,9 @@ ov_Y_set = np.interp(xvals, iv_t_control, Y_parms)
 # --------- Start van de funtie definities
 
 def R_schip(snelheid_schip):
-      global Y, c1
-      weerstand =  Y * c1 * snelheid_schip**2
-      return weerstand
+    global Y, c1
+    weerstand =  Y * c1 * snelheid_schip**2
+    return weerstand
 
 
 # -------- Make arrays -------------------------------------------------------
@@ -239,60 +239,60 @@ fig.tight_layout()
 fig.savefig('grafieken/resultaat_vaarsim_mt1457.png')
 
 fig6, ax6 = plt.subplots()
-ax6.plot(mytime[5:tmax-5], n_e[5:tmax-5], label="Engine RPM")
-ax6.plot(mytime[5:tmax-5], n_p[5:tmax-5], label="Propeller RPM")
-ax6.set(title='RPM over Time',
+ax6.plot(mytime[5:tmax-5], n_e[5:tmax-5], label="Engine RPS")
+ax6.plot(mytime[5:tmax-5], n_p[5:tmax-5], label="Propeller RPS")
+ax6.set(title='RPS over Time',
         xlabel='Time [s]',
-        ylabel='RPM')
+        ylabel='RPM [Hz]')
 ax6.legend()
 ax6.grid()
 fig6.tight_layout()
 fig6.savefig("grafieken/n_p-n_e.png")
 
 fig7, ax7 = plt.subplots()
-ax7.plot(v_s[5:tmax-5], R[5:tmax-5])
+ax7.plot(v_s[5:tmax-5], R[5:tmax-5]/1000)
 ax7.set(title='Resistance over ship velocity',
-        xlabel='Ship velocity',
-        ylabel='Resistance')
+        xlabel='Ship velocity [m/s]',
+        ylabel='Resistance [kN]')
 ax7.grid()
 fig7.tight_layout()
 fig7.savefig("grafieken/Snelheid-weerstand.png")
 
 fig8, ax8 = plt.subplots()
-ax8.plot(v_a[5:tmax-5], F_prop[5:tmax-5])
+ax8.plot(v_a[5:tmax-5], F_prop[5:tmax-5]/1000)
 ax8.set(title='Thrust over advance velocity',
-        xlabel='Advance Velocity',
-        ylabel='Thrust')
+        xlabel='Advance Velocity [m/s]',
+        ylabel='Thrust [kN]')
 ax8.grid()
 fig8.tight_layout()
 fig8.savefig("grafieken/v_advance-thrust.png")
 
 fig9, ax9 = plt.subplots()
-ax9.plot(n_p[5:tmax-5], M_prop[5:tmax-5])
+ax9.plot(n_p[5:tmax-5], M_prop[5:tmax-5]/1000)
 ax9.set(title='Propellor torque over propellor RPM',
-        xlabel='propellor RPM',
-        ylabel='Torque [Nm]')
+        xlabel='propellor RPS [Hz]',
+        ylabel='Torque [kNm]')
 ax9.grid()
 fig9.tight_layout()
 fig9.savefig("grafieken/n_p-M_prop.png")
 
 fig10, ax10 = plt.subplots()
-ax10.plot(n_e[5:tmax-5], M_b[5:tmax-5])
+ax10.plot(n_e[5:tmax-5], M_b[5:tmax-5]/1000)
 ax10.set(title='Engine torque over engine RPM',
-        xlabel='RPM',
-        ylabel='Torque [Nm]')
+        xlabel='RPS [Hz]',
+        ylabel='Torque [kNm]')
 ax10.grid()
 fig10.tight_layout()
 fig10.savefig("grafieken/n_e-M_b.png")
 
 fig11, ax11 = plt.subplots()
-ax11.plot(mytime[5:tmax-5], P_E[5:tmax-5], label="Towing power")
-ax11.plot(mytime[5:tmax-5], P_d[5:tmax-5], label="Propeller power")
-ax11.plot(mytime[5:tmax-5], P_b[5:tmax-5], label="Brake power")
-ax11.plot(mytime[5:tmax-5], Q_f_l[5:tmax-5], label="Thermal energy per ignition")
+ax11.plot(mytime[5:tmax-5], P_E[5:tmax-5]/1000, label="Towing power")
+ax11.plot(mytime[5:tmax-5], P_d[5:tmax-5]/1000, label="Propeller power")
+ax11.plot(mytime[5:tmax-5], P_b[5:tmax-5]/1000, label="Brake power")
+ax11.plot(mytime[5:tmax-5], Q_f_l[5:tmax-5]/1000, label="Thermal energy per ignition")
 ax11.set(title='Power over Time',
         xlabel='Time [s]',
-        ylabel='RPM')
+        ylabel='Power [kW]')
 ax11.legend()
 ax11.grid()
 fig11.tight_layout()
@@ -302,7 +302,7 @@ fig12, ax12 = plt.subplots()
 ax12.plot(mytime[5:tmax-5], np.zeros(tmax-10) + eta_e*100, label="Engine efficiency")
 ax12.plot(mytime[5:tmax-5], np.zeros(tmax-10) + eta_h*100, label="Hull efficiency")
 ax12.plot(mytime[5:tmax-5], np.zeros(tmax-10) + eta_TRM*100, label="Transmission efficiency")
-ax12.plot(mytime[5:tmax-5], eta_o[5:tmax-5], label="Open water propeller efficiency")
+ax12.plot(mytime[5:tmax-5], eta_o[5:tmax-5]*100, label="Open water propeller efficiency")
 ax12.set(title='Efficiency over Time',
         xlabel='Time [s]',
         ylabel='Efficiency [%]')
