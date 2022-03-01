@@ -2,8 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-V_m = np.array([0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1])   #m/s
-R_tm = np.array([0.000,0.098,0.200,0.340,0.570,0.830,1.130,1.510,1.980,2.590,3.400])  #N
+V_m = np.array([0, 0.1, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.3, 1.4, 1.5, 1.6])   #m/s
+R_tm_offset = 0.4979
+R_tm = np.array([0.4979, 0.4672, 0.4026, 0.1850, -0.3232, -0.9847, -1.9831, -3.8821, -5.1792, -6.7597, -9.6771, -14.7063])  #N
+R_tm = - R_tm + R_tm_offset
 g = 9.81            #m/s**2
 l = 31.50/19        #m
 viscositeit= 1.0811E-06
@@ -30,11 +32,14 @@ fit = np.polyfit(x[fit_from:fit_to], y[fit_from:fit_to], 1)
 fity = fit[0]*x + fit[1]
 
 fig, ax = plt.subplots()
-ax.set_xlim([0, 1.4])
-ax.set_ylim([0.95, 1.8])
+# ax.set_xlim([0, 2])
+# ax.set_ylim([0.95, 1.8])
 ax.set_xlabel(r"$F_r^4 / C_{fm}$")
 ax.set_ylabel(r"$C_{tm} / C_{fm}$")
-ax.scatter(x, y)
+ax.scatter(np.concatenate((x[0:fit_from], x[fit_to:-1])), 
+           np.concatenate((y[0:fit_from], y[fit_to:-1])), color="tab:orange")
+
+ax.scatter(x[fit_from:fit_to], y[fit_from:fit_to], color="tab:blue")
 ax.plot(x, fity)
 
 print("Fit is: {}x + {}".format(fit[0], fit[1]))
