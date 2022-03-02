@@ -172,3 +172,6 @@ ax7.legend()
 # ax7.grid()
 
 fig7.savefig("weerstandsproef/weerstandscoefficient-bar.pdf")
+
+print([V_s, C_Ws])
+print(k)
