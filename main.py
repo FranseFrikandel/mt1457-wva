@@ -103,7 +103,6 @@ def R_schip(snelheid_schip):
     weerstand =  Y * c1 * snelheid_schip**2
     return weerstand
 
-
 # -------- Make arrays -------------------------------------------------------
 
 # Velocity of the ship [m/s]
