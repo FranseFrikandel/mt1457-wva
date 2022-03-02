@@ -14,9 +14,7 @@ History:
               no graphing endpoits...   EU
     20200228H: simps correctie           EU
 """
-from cProfile import label
 import numpy as np
-import math
 import matplotlib.pyplot as plt
 
 from scipy import integrate
@@ -33,6 +31,7 @@ print('fuel properties loaded')
 
 # water properties
 rho_sw = 1025           # density of seawater [kg/m3]
+viscositeit = 1.2872E-06
 print('water properties loaded')
 
 # ship data
@@ -41,6 +40,7 @@ c1 = 1500               # resistance coefficient c1 in R = c1*vs^2
 v_s0 = 6.5430           # ship design speed [m/s]
 t = 0.1600              # thrust deduction factor[-]
 w = 0.2000              # wake factor [-]
+l = 31.5                # length of ship [m]
 eta_h = (1-t)/(1-w)
 print('ship data loaded')
 
@@ -62,7 +62,7 @@ k_es = 2                # k-factor for engines based on nr.of strokes per cycle
 P_b = np.zeros(tmax)    # engine power [kW]
 P_b[0] = 960            # Nominal engine power [kW]
 M_b = np.zeros(tmax)    # engine torque [Nm]
-M_b[0] = P_b[0]*1000/2/math.pi/(900/60)  # ([P_b*1000/2/math.pi/n_eng_nom])
+M_b[0] = P_b[0]*1000/2/np.pi/(900/60)  # ([P_b*1000/2/np.pi/n_eng_nom])
 print('engine data loaded')
 
 # gearbox data
@@ -96,11 +96,23 @@ ov_Y_set = np.interp(xvals, iv_t_control, Y_parms)
 # ov_X_set = (np.sin(0.05*mytime)+1)*0.5
 # ov_Y_set = np.interp(xvals, iv_t_control, Y_parms)
 
+# Tabel van schip weerstandscoefficienten vs snelheid
+C_Ws = np.array([[0. , 0.43588989, 0.87177979, 1.74355958, 2.61533937,
+       3.48711915, 4.35889894, 5.23067873, 5.66656863, 6.10245852,
+       6.53834842, 6.97423831], [0, -0.00096818, -0.00128629, -0.00125762,  0.00016455,
+       0.00061338,  0.00130253,  0.00298342,  0.00390739,  0.00489266,
+       0.00713291,  0.01095216]])
+k = 0.23261693620133994
+
 # --------- Start van de funtie definities
 
 def R_schip(snelheid_schip):
-    global Y, c1
-    weerstand =  Y * c1 * snelheid_schip**2
+    global Y, C_Ws, k, l_s, viscositeit, rho_sw
+    C_Ws_cur = np.interp(snelheid_schip, C_Ws[0], C_Ws[1])
+    Re_s_cur = (snelheid_schip*l_s)/viscositeit
+    C_Fs_cur = 0.075 / (((np.log10(Re_s_cur)-2))**2)
+    C_Ts_cur = (1+k)*C_Fs_cur + C_Ws_cur
+    weerstand = Y*C_Ts_cur*0.5*rho_sw*(snelheid_schip**2)*snelheid_schip
     return weerstand
 
 # -------- Make arrays -------------------------------------------------------
@@ -158,12 +170,12 @@ for k in range(tmax-1):
     KT[k+1] = J[k+1] * K_T_a + K_T_b
     KQ[k+1] = J[k+1] * K_Q_a + K_Q_b
     P_O[k+1] = ((((J[k+1] * K_Q_a) + K_Q_b) *
-                n_p[k] ** 2) * rho_sw * D_p ** 5) * n_p[k] * 2 * math.pi
-    P_p[k+1] = M_prop[k] * n_p[k] * 2 * math.pi
+                n_p[k] ** 2) * rho_sw * D_p ** 5) * n_p[k] * 2 * np.pi
+    P_p[k+1] = M_prop[k] * n_p[k] * 2 * np.pi
     # Calculate acceleration from resulting force --> ship speed & tr.distance
     sum_a[k+1] = ((F_prop[k] - (R[k] / (1-t)))/m_ship)
     #v_s_new = (np.trapz(sum_a[k:k+2], dx=0.01)) + v_s[k]
-    v_s[k+1]  = integrate.simps(sum_a[:k+2], dx=0.01)+v_s0 # TODO: Waarom dx=0.01?
+    v_s[k+1]  = integrate.simps(sum_a[:k+2], dx=0.01) + v_s0 # TODO: Waarom dx=0.01?
     #v_s[k+1] = v_s_new
     Rsp[k+1] = R[k] / (1-t)
     # Traveled distance
@@ -176,7 +188,7 @@ for k in range(tmax-1):
     R[k+1] = R_schip( v_s[k+1])
     P_E[k+1] = v_s[k+1] * R[k+1]
     # Calculate acceleration from resulting force --> propellor np
-    sum_dnpdt[k+1] = ((M_b[k] * i_gb * eta_TRM) - M_prop[k])/(2*math.pi*I_tot)
+    sum_dnpdt[k+1] = ((M_b[k] * i_gb * eta_TRM) - M_prop[k])/(2*np.pi*I_tot)
     n_p[k+1] = integrate.simps(sum_dnpdt[:k+2], dx=0.01) + n_p[0]
     # Engine speed
     n_e[k+1] = n_p[k+1] * i_gb
@@ -191,7 +203,7 @@ for k in range(tmax-1):
     # Brake power
     P_b[k+1] = (W_e * n_e[k+1] * i) / k_es
     # Engine torque
-    M_b[k+1] = P_b[k+1] / (2 * math.pi * n_e[k+1])
+    M_b[k+1] = P_b[k+1] / (2 * np.pi * n_e[k+1])
     M_Trm[k+1] = M_b[k+1] * i_gb * eta_TRM
 
 # EU just to be sure
