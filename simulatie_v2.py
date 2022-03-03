@@ -2,6 +2,7 @@
 """
 Een volledige re-write van viskotter simulatie.
 """
+from msilib import type_localizable
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -63,7 +64,7 @@ eta_R = 1.0100          # relative rotative efficiency [-]
 # engine data
 m_f_nom = 1.314762      # nominal fuel injection [g]
 eta_e = 0.3800          # nominal engine efficiency [-]
-i = 6                   # number of cylinders [-]
+n_cyl = 6                   # number of cylinders [-]
 k_es = 2                # k-factor for engines based on nr.of strokes per cycle
 P_b = np.zeros(tmax)    # engine power [kW]
 P_b[0] = 960            # Nominal engine power [kW]
@@ -89,10 +90,16 @@ def Resistance(speed, Y):
     Re_s_cur = (speed*l_s)/viscositeit
     C_Fs_cur = 0.075 / (((np.log10(Re_s_cur)-2))**2)
     C_Ts_cur = (1+k)*C_Fs_cur + C_Ws_cur
-    weerstand = Y*C_Ts_cur*0.5*rho_sw*(snelheid_schip**2)*snelheid_schip
+    weerstand = Y*C_Ts_cur*0.5*rho_sw*(speed**2)
     return weerstand
 
 def engine():
+    pass
 
-simulation_length = tmax/dt +
+simulation_length = tmax/dt + 1
 v_s = np.zeros(simulation_length)
+
+for i, t in enumerate(time):
+    if i == 0:
+        continue
+    v_s[i+1] = v_s[i]

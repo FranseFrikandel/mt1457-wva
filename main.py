@@ -112,7 +112,7 @@ def R_schip(snelheid_schip):
     Re_s_cur = (snelheid_schip*l_s)/viscositeit
     C_Fs_cur = 0.075 / (((np.log10(Re_s_cur)-2))**2)
     C_Ts_cur = (1+k)*C_Fs_cur + C_Ws_cur
-    weerstand = Y*C_Ts_cur*0.5*rho_sw*(snelheid_schip**2)*snelheid_schip
+    weerstand = Y*C_Ts_cur*0.5*rho_sw*(snelheid_schip**2)
     return weerstand
 
 # -------- Make arrays -------------------------------------------------------
