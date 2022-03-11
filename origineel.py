@@ -182,7 +182,6 @@ v_s[1]=v_s0
 
 # -------------- Plot Figure -------------------------------------------------
 
-%matplotlib inline
 
 # create figure with four subplots
 fig = plt.figure(figsize=(10, 20))

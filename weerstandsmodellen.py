@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import json
 
 V_m = np.array([0, 0.1, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.3, 1.4, 1.5, 1.6])   #m/s
 V_s = V_m * np.sqrt(19)
@@ -95,7 +94,7 @@ fig2.savefig("weerstandsproef/inzinking.pdf")
 # fig3.savefig("weerstandsproef/weerstand.pdf")
 
 fig4, ax4 = plt.subplots()
-ax4.plot(V_m, R_Tm)
+ax4.plot(V_m, R_Tm, marker='o')
 # ax4.legend()
 ax4.grid()
 ax4.set_ylabel("Weerstand [N]")
@@ -133,12 +132,12 @@ for i, snelheid in enumerate(snelheden):
     R_nieuw[i] = R_schip_nieuw(snelheid)
 
 fig5, ax5 = plt.subplots()
-ax5.plot(snelheden, R_oud, label="Oud weerstandsmodel")
-ax5.plot(snelheden, R_nieuw, label="Nieuw weerstandsmodel")
+ax5.plot(snelheden, R_oud/1000, label="Oud weerstandsmodel")
+ax5.plot(snelheden, R_nieuw/1000, label="Nieuw weerstandsmodel")
 ax5.legend()
 ax5.grid()
 ax5.set_xlabel("Schipsnelheid [m/s]")
-ax5.set_ylabel("Weerstand [N]")
+ax5.set_ylabel("Weerstand [kN]")
 ax5.set_title("Het oude en nieuwe weerstandsmodel")
 fig5.savefig("weerstandsproef/weerstand_modellen.pdf")
 
@@ -163,9 +162,9 @@ ax6.grid()
 fig6.savefig("weerstandsproef/weerstandscoefficient.pdf")
 
 fig7, ax7 = plt.subplots()
-ax7.bar(1, C_Ws[-1], label=r"$C_{Ws}$")
-ax7.bar(1, C_Fs[-1], label=r"$C_{Fs}$", bottom=C_Wm[-1])
-ax7.bar(2, C_Ts[-1], label=r"$C_{Ts}$")
+ax7.bar(1, C_Ws[-1] * 100 / C_Ts[-1], label=r"$C_{Ws}$")
+ax7.bar(1, C_Fs[-1] * (1+k) * 100 / C_Ts[-1], label=r"$C_{Fs}$", bottom=C_Ws[-1] * 100 / C_Ts[-1])
+# ax7.bar(2, C_Ts[-1], label=r"$C_{Ts}$")
 ax7.set_ylabel("Weerstandscoefficient")
 ax7.axes.xaxis.set_ticklabels([])
 ax7.legend()

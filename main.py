@@ -97,23 +97,28 @@ ov_Y_set = np.interp(xvals, iv_t_control, Y_parms)
 # ov_Y_set = np.interp(xvals, iv_t_control, Y_parms)
 
 # Tabel van schip weerstandscoefficienten vs snelheid
-C_Ws = np.array([[0. , 0.43588989, 0.87177979, 1.74355958, 2.61533937,
-       3.48711915, 4.35889894, 5.23067873, 5.66656863, 6.10245852,
-       6.53834842, 6.97423831], [0, -0.00096818, -0.00128629, -0.00125762,  0.00016455,
-       0.00061338,  0.00130253,  0.00298342,  0.00390739,  0.00489266,
-       0.00713291,  0.01095216]])
-k = 0.23261693620133994
+# C_Ws = np.array([[0. , 0.43588989, 0.87177979, 1.74355958, 2.61533937,
+#        3.48711915, 4.35889894, 5.23067873, 5.66656863, 6.10245852,
+#        6.53834842, 6.97423831], [0, -0.00096818, -0.00128629, -0.00125762,  0.00016455,
+#        0.00061338,  0.00130253,  0.00298342,  0.00390739,  0.00489266,
+#        0.00713291,  0.01095216]])
+# k = 0.23261693620133994
 
 # --------- Start van de funtie definities
 
+# def R_schip(snelheid_schip):
+#     global Y, C_Ws, k, l_s, viscositeit, rho_sw
+#     C_Ws_cur = np.interp(snelheid_schip, C_Ws[0], C_Ws[1])
+#     Re_s_cur = (snelheid_schip*l_s)/viscositeit
+#     C_Fs_cur = 0.075 / (((np.log10(Re_s_cur)-2))**2)
+#     C_Ts_cur = (1+k)*C_Fs_cur + C_Ws_cur
+#     weerstand = Y*C_Ts_cur*0.5*rho_sw*(snelheid_schip**2)
+#     return weerstand
+
 def R_schip(snelheid_schip):
-    global Y, C_Ws, k, l_s, viscositeit, rho_sw
-    C_Ws_cur = np.interp(snelheid_schip, C_Ws[0], C_Ws[1])
-    Re_s_cur = (snelheid_schip*l_s)/viscositeit
-    C_Fs_cur = 0.075 / (((np.log10(Re_s_cur)-2))**2)
-    C_Ts_cur = (1+k)*C_Fs_cur + C_Ws_cur
-    weerstand = Y*C_Ts_cur*0.5*rho_sw*(snelheid_schip**2)
-    return weerstand
+      global Y, c1
+      weerstand =  Y * c1 * snelheid_schip**2
+      return weerstand
 
 # -------- Make arrays -------------------------------------------------------
 
@@ -254,7 +259,7 @@ ax6.plot(mytime[5:tmax-5], n_e[5:tmax-5], label="Engine RPS")
 ax6.plot(mytime[5:tmax-5], n_p[5:tmax-5], label="Propeller RPS")
 ax6.set(title='RPS over Time',
         xlabel='Time [s]',
-        ylabel='RPM [Hz]')
+        ylabel='RPS [Hz]')
 ax6.legend()
 ax6.grid()
 fig6.tight_layout()

@@ -61,16 +61,6 @@ K_Q_a = -0.03346        # factor a in K_Q = a*J + b [-]
 K_Q_b = 0.0308          # factor b in K_Q = a*J + b [-]
 eta_R = 1.0100          # relative rotative efficiency [-]
 
-# engine data
-m_f_nom = 1.314762      # nominal fuel injection [g]
-eta_e = 0.3800          # nominal engine efficiency [-]
-n_cyl = 6                   # number of cylinders [-]
-k_es = 2                # k-factor for engines based on nr.of strokes per cycle
-P_b = np.zeros(tmax)    # engine power [kW]
-P_b[0] = 960            # Nominal engine power [kW]
-M_b = np.zeros(tmax)    # engine torque [Nm]
-M_b[0] = P_b[0]*1000/2/np.pi/(900/60)  # ([P_b*1000/2/np.pi/n_eng_nom])
-
 # gearbox data
 eta_TRM = 0.9500        # transmission efficiency [-]
 i_gb = 4.2100           # gearbox ratio [-]
@@ -93,8 +83,24 @@ def Resistance(speed, Y):
     weerstand = Y*C_Ts_cur*0.5*rho_sw*(speed**2)
     return weerstand
 
-def engine():
-    pass
+def Engine(n_e, X):
+    n_cyl = 6                   # number of cylinders [-]
+    k_es = 2 
+    m_f_nom = 1.314762      # nominal fuel injection [g]
+    eta_td = 0.52
+    LHV = 42700
+    n_nom = 900/60
+
+    Q_f = X * m_f_nom * LHV
+    Q_loss_cooling = 1908.8 + 7635.2 * X
+    W_loss_mech = 711.1 + 1659.3 * (n_e/n_nom)
+    W_i = (Q_f - Q_loss_cooling) * eta_td
+    W_e = W_i - W_loss_mech
+    P_b = W_e * n_e * n_cyl / k_es
+    M_b = P_b / (2 * np.pi * n_e)
+
+    return M_b, P_b
+
 
 simulation_length = tmax/dt + 1
 v_s = np.zeros(simulation_length)
@@ -103,3 +109,9 @@ for i, t in enumerate(time):
     if i == 0:
         continue
     v_s[i+1] = v_s[i]
+
+    if not (0.2 < X(t) < 1):
+        raise Exception("Fuel rack buiten toegestaan bereik.")
+    
+    if n_e > 900/60:
+        print("Maximaal toerental overschreden.")

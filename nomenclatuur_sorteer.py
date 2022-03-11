@@ -7,7 +7,6 @@ substr = "\ |\?|\.|\!|\/|\;|\:|\{|\}|\_|\$|\&(.*)"
 with open("nomenclatuur_ongesorteerd.txt") as nc_unsorted:
     for line in nc_unsorted.readlines():
         nc_line_sort = re.sub(substr, "", line)
-        print(nc_line_sort)
         nc_lines.append([line, nc_line_sort])
 
 nc_lines.sort(key=lambda li : li[1])
