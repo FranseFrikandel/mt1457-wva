@@ -21,7 +21,7 @@ from scipy import integrate
 
 # ----------- parameters for simulation --------------------------------------
 tmax = 36000           # simulation time [s]
-dt = 1                  # timestep [s]
+dt = 1                  # timestep [s] - dt is niet correct geimplementeerd.
 
 # fuel properties
 LHV = 42700             # Lower Heating Value [kJ/kg]
@@ -54,6 +54,7 @@ m_f_nom = 1.314762      # nominal fuel injection [g]
 eta_e = 0.3800          # nominal engine efficiency [-]
 i = 6                   # number of cylinders [-]
 k_es = 2                # k-factor for engines based on nr.of strokes per cycle
+# Lengte van array is gelijk aan tmax. Moet zijn tmax/dt. Dit geldt voor alle andere arrays
 P_b = np.zeros(tmax)    # engine power [kW]
 P_b[0] = 960            # Nominal engine power [kW]
 M_b = np.zeros(tmax)    # engine torque [Nm]
@@ -103,6 +104,9 @@ n_p = np.zeros(tmax)
 n_p[0] = in_p
 # Rpm diesel engine [Hz]
 n_e = np.zeros(tmax)
+# Dit is nominaal toerental, dit instellen als het begintoerental is niet logisch
+# Tevens onlogisch dat n_p en n_e onafhankelijk van elkaar startwaardes krijgen,
+# terwijl ze rechtstreeks aan elkaar gekoppeld zijn.
 n_e[0] = 900/60         # Nominal engine speed in rotations per second [Hz]
 # Resistance [N]
 R = np.zeros(tmax)
@@ -157,7 +161,7 @@ for k in range(tmax-1):
     # Resistance
     Y = ov_Y_set[k]
     R[k+1] = R_schip( v_s[k+1])
-    P_E[k+1] = v_s[k+1] * R[k+1]
+    P_E[k+1] = v_s[k+1] * R[k+1] # Dit is volgens mij niet P_E
     # Calculate acceleration from resulting force --> propellor np
     sum_dnpdt[k+1] = ((M_b[k] * i_gb * eta_TRM) - M_prop[k])/(2*math.pi*I_tot)
     n_p[k+1] = integrate.simps(sum_dnpdt[:k+2], dx=0.01) + n_p[0]
