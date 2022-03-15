@@ -2,7 +2,6 @@
 """
 Een volledige re-write van viskotter simulatie.
 """
-from msilib import type_localizable
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -14,7 +13,7 @@ time = np.linspace(0, tmax, 1 + round((tmax)/dt))
 in_p = 3.2830  # initial rpm
 v_s0 = 6.5
 
-def X(t):
+def X_func(t):
     global tmax
     t_control = np.array([0, 0.1*tmax, 0.2*tmax, 0.5*tmax,
                          0.6*tmax, 0.7*tmax, tmax])
@@ -25,7 +24,7 @@ def X(t):
             return X_parms[i]
     return X_parms[-1]
 
-def Y(t):
+def Y_func(t):
     global tmax
     t_control = np.array([0, 0.1*tmax, 0.2*tmax, 0.5*tmax,
                          0.6*tmax, 0.7*tmax, tmax])
@@ -36,16 +35,12 @@ def Y(t):
             return Y_parms[i]
     return Y_parms[-1]
 
-# fuel properties
-LHV = 42700             # Lower Heating Value [kJ/kg]
-
 # water properties
 rho_sw = 1025           # density of seawater [kg/m3]
 viscositeit = 1.2872E-06
 
 # ship data
 m_ship = 358000         # ship mass [kg]
-c1 = 1500               # resistance coefficient c1 in R = c1*vs^2
 v_s0 = 6.5430           # ship design speed [m/s]
 t = 0.1600              # thrust deduction factor[-]
 w = 0.2000              # wake factor [-]
@@ -61,12 +56,7 @@ K_Q_a = -0.03346        # factor a in K_Q = a*J + b [-]
 K_Q_b = 0.0308          # factor b in K_Q = a*J + b [-]
 eta_R = 1.0100          # relative rotative efficiency [-]
 
-# gearbox data
-eta_TRM = 0.9500        # transmission efficiency [-]
-i_gb = 4.2100           # gearbox ratio [-]
-I_tot = 200             # total mass of inertia of propulsion system [kg*m^2]
-
-def Resistance(speed, Y):
+def resistance(speed, Y):
     global C_Ws, k, l_s, viscositeit, rho_sw
     C_Ws = np.array([[0. , 0.43588989, 0.87177979, 1.74355958, 2.61533937,
        3.48711915, 4.35889894, 5.23067873, 5.66656863, 6.10245852,
@@ -83,7 +73,7 @@ def Resistance(speed, Y):
     weerstand = Y*C_Ts_cur*0.5*rho_sw*(speed**2)
     return weerstand
 
-def Engine(n_e, X):
+def engine(n_e, X):
     n_cyl = 6                   # number of cylinders [-]
     k_es = 2 
     m_f_nom = 1.314762      # nominal fuel injection [g]
@@ -101,17 +91,40 @@ def Engine(n_e, X):
 
     return M_b, P_b
 
+def gearbox(n_e, M_e):
+    eta_TRM = 0.9500        # transmission efficiency [-]
+    i_gb = 4.2100           # gearbox ratio [-]
+    I_tot = 200             # total mass of inertia of propulsion system [kg*m^2]
+    return n_e/i_gb, M_e*i_gb*eta_TRM
+
+def propeller(n_p, v_a):
+    pass
 
 simulation_length = tmax/dt + 1
 v_s = np.zeros(simulation_length)
+n_e = np.zeros(simulation_length)
+a_s = np.zeros(simulation_length)
+X = np.zeros(simulation_length)
+Y = np.zeros(simulation_length)
+
+# Initial values
+v_s[0] = 0
+n_e[0] = 200/60
 
 for i, t in enumerate(time):
-    if i == 0:
-        continue
-    v_s[i+1] = v_s[i]
+    # if i == 0:
+    #     continue
+
+    X[i] = X_func(t)
+    Y[i] = Y_func(t)
+
+    M_b[i], P_b[i] = engine(n_e[i], X[i])
+
+    
+    v_s[i+1] = v_s[i] + a[i] * dt
 
     if not (0.2 < X(t) < 1):
-        raise Exception("Fuel rack buiten toegestaan bereik.")
+        print("Fuel rack buiten toegestaan bereik.")
     
-    if n_e > 900/60:
+    if n_e[i] > 900/60:
         print("Maximaal toerental overschreden.")
