@@ -219,4 +219,4 @@ ax4.set(title='Fuel Rack over Time',
 ax4.grid()
 fig.tight_layout()
 fig.savefig('resultaat_vaarsim_mt1457.png')
-plt.show()
+# plt.show()
