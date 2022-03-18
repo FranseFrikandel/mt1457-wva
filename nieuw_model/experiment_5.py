@@ -28,8 +28,6 @@ def clutch_func(t, X, n_e):
     Functie die bepaalt of de motor wel of niet moet worden ontkoppelt. Kan op tijdsbasis of basis van andere
     parameters.
     """
-    if X < 0.21 and n_e < 300/60:
-        return False
     return True
 
-simulatie_v2.simulation(X_func, Y_func, clutch_func, tmax, dt, "grafieken/exp0/")
+simulatie_v2.simulation(X_func, Y_func, clutch_func, tmax, dt, "grafieken/exp5/")

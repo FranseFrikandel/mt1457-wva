@@ -176,8 +176,8 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, plotpath):
     if not os.path.exists(plotpath):
         os.makedirs(plotpath)
 
-    fig = plt.figure(figsize=(10, 20))
-    ax1 = fig.add_subplot(6, 1, 1)  # fig.add_subplot(#rows, #cols, #plot)
+    fig = plt.figure(figsize=(10, 13.5))
+    ax1 = fig.add_subplot(4, 1, 1)  # fig.add_subplot(#rows, #cols, #plot)
     #shipspeed
     ax1.plot(time[5:sim_length-5], v_s[5:sim_length-5])
     ax1.set(title='Ship speed',
@@ -185,21 +185,21 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, plotpath):
             xlabel='Time [s]')
     ax1.grid()
     # distance traveled
-    ax2 = fig.add_subplot(6, 1, 2)  # fig.add_subplot(#rows, #cols, #plot)
+    ax2 = fig.add_subplot(4, 1, 2)  # fig.add_subplot(#rows, #cols, #plot)
     ax2.plot(time[5:sim_length-5], dist_travelled[5:sim_length-5])
     ax2.set(title='Ship Distance Travelled',
             ylabel='Distance travelled [m]',
             xlabel='Time [s]')
     ax2.grid()
     # brandstofverbruik
-    ax3 = fig.add_subplot(6, 1, 3)  # fig.add_subplot(#rows, #cols, #plot)
+    ax3 = fig.add_subplot(4, 1, 3)  # fig.add_subplot(#rows, #cols, #plot)
     ax3.plot(time[5:sim_length-5], fuel_used[5:sim_length-5])
     ax3.set(title='Fuel Consumption over Time',
             ylabel='fuel consumption [g]',
             xlabel='Time [s]')
     ax3.grid()
     # fuelrack
-    ax4 = fig.add_subplot(6, 1, 4)
+    ax4 = fig.add_subplot(4, 1, 4)
     ax4.plot(time[5:sim_length-5], X[5:sim_length-5]*100)
     ax4.set(title='Fuel Rack over Time',
             ylabel='Fuel rack [%]',

@@ -24,6 +24,10 @@ def Y_func(t):
     return np.interp(t, t_control, Y_parms)
 
 def clutch_func(t, X, n_e):
+    """
+    Functie die bepaalt of de motor wel of niet moet worden ontkoppelt. Kan op tijdsbasis of basis van andere
+    parameters.
+    """
     return True
 
 simulatie_v2.simulation(X_func, Y_func, clutch_func, tmax, dt, "grafieken/exp0/")
