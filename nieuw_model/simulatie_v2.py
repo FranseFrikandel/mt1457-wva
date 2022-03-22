@@ -88,7 +88,7 @@ def propeller(n_p, J):
     return F_prop, M_prop
 
 
-def simulation(X_func, Y_func, clutch_func, tmax, dt, plotpath):
+def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     time = np.linspace(0, tmax, 1 + round((tmax)/dt))
 
     sim_length = int(tmax/dt + 1)
@@ -112,8 +112,8 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, plotpath):
     Y = np.zeros(sim_length)
 
     # Initial values
-    v_s[0] = 2.
-    n_e[0] = 800/60
+    v_s[0] = v_s_0
+    n_e[0] = n_e_0
     n_p[0] = n_e[0] / i_gb
 
     hasPrintedRPMErr = False

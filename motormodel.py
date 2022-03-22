@@ -77,13 +77,16 @@ fig_torque.savefig("motormodel/koppel.pdf")
 
 # Rendementen op 550 RPM.
 
-cur_rpm_idx = int(ySize * 350/700)
+rpm_375_idx = int(ySize * 175/700)
+rpm_550_idx = int(ySize * 350/700)
+rpm_725_idx = int(ySize * 525/700)
+rpm_900_idx = -1
 
 fig_efficencies = plt.figure()
 ax_efficencies = fig_efficencies.add_subplot(111)
-ax_efficencies.plot(X_array*100, eta_e_n[cur_rpm_idx, :]*100, label=r"$\eta_e$")
-ax_efficencies.plot(X_array*100, eta_q_n[cur_rpm_idx, :]*100, label=r"$\eta_q$")
-ax_efficencies.plot(X_array*100, eta_mech_n[cur_rpm_idx, :]*100, label=r"$\eta_{mech}$")
+ax_efficencies.plot(X_array*100, eta_e_n[rpm_550_idx, :]*100, label=r"$\eta_e$")
+ax_efficencies.plot(X_array*100, eta_q_n[rpm_550_idx, :]*100, label=r"$\eta_q$")
+ax_efficencies.plot(X_array*100, eta_mech_n[rpm_550_idx, :]*100, label=r"$\eta_{mech}$")
 ax_efficencies.plot(X_array*100, np.zeros(xSize) + 52, label=r"$\eta_{td}$")
 ax_efficencies.plot(X_array*100, np.zeros(xSize) + 100, label=r"$\eta_{comb}$")
 ax_efficencies.plot(X_array*100, np.zeros(xSize) + 38, label=r"$\eta_{e}$ origineel")
@@ -97,3 +100,31 @@ ax_efficencies.set_position([box.x0, box.y0 + box.height * 0.15,
 ax_efficencies.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
           fancybox=True, shadow=True, ncol=6)
 fig_efficencies.savefig("motormodel/rendement.pdf")
+
+fig_eff_rpm = plt.figure()
+ax_eff_rpm = fig_eff_rpm.add_subplot(111)
+ax_eff_rpm.plot(X_array*100, eta_e_n[rpm_375_idx, :]*100, label=r"$\eta_e$", color="tab:blue")
+ax_eff_rpm.plot(X_array*100, eta_q_n[rpm_375_idx, :]*100, label=r"$\eta_q$", color="tab:orange")
+ax_eff_rpm.plot(X_array*100, eta_mech_n[rpm_375_idx, :]*100, label=r"$\eta_{mech}$", color="tab:green")
+ax_eff_rpm.plot(X_array*100, eta_e_n[rpm_550_idx, :]*100, color="tab:blue")
+# ax_eff_rpm.plot(X_array*100, eta_q_n[rpm_550_idx, :]*100, label=r"$\eta_q$", color="tab:orange")
+ax_eff_rpm.plot(X_array*100, eta_mech_n[rpm_550_idx, :]*100, color="tab:green")
+ax_eff_rpm.plot(X_array*100, eta_e_n[rpm_725_idx, :]*100, color="tab:blue")
+# ax_eff_rpm.plot(X_array*100, eta_q_n[rpm_725_idx, :]*100, label=r"$\eta_q$", color="tab:orange")
+ax_eff_rpm.plot(X_array*100, eta_mech_n[rpm_725_idx, :]*100, color="tab:green")
+ax_eff_rpm.plot(X_array*100, eta_e_n[rpm_900_idx, :]*100, color="tab:blue")
+# ax_eff_rpm.plot(X_array*100, eta_q_n[rpm_900_idx, :]*100, label=r"$\eta_q$", color="tab:orange")
+ax_eff_rpm.plot(X_array*100, eta_mech_n[rpm_900_idx, :]*100, color="tab:green")
+# ax_eff_rpm.plot(X_array*100, np.zeros(xSize) + 52, label=r"$\eta_{td}$")
+# ax_eff_rpm.plot(X_array*100, np.zeros(xSize) + 100, label=r"$\eta_{comb}$")
+# ax_eff_rpm.plot(X_array*100, np.zeros(xSize) + 38, label=r"$\eta_{e}$ origineel")
+ax_eff_rpm.set_xlabel("Fuel rack [%]")
+ax_eff_rpm.set_ylabel("Efficiency [%]")
+ax_eff_rpm.set_title("Engine efficiency vs fuel rack")
+ax_eff_rpm.grid()
+box = ax_eff_rpm.get_position()
+ax_eff_rpm.set_position([box.x0, box.y0 + box.height * 0.15,
+                 box.width, box.height * 0.9])
+ax_eff_rpm.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
+          fancybox=True, shadow=True, ncol=6)
+fig_eff_rpm.savefig("motormodel/rendement_rpm.pdf")

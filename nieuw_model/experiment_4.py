@@ -7,6 +7,9 @@ import simulatie_v2
 tmax = 36000
 dt = 0.1
 
+v_s_init = 6.5430
+n_e_init = 800/60
+
 def X_func(t):
     global tmax
     t_control = np.array([0, 0.1*tmax, 0.2*tmax, 0.5*tmax,
@@ -30,4 +33,4 @@ def clutch_func(t, X, n_e):
     """
     return True
 
-simulatie_v2.simulation(X_func, Y_func, clutch_func, tmax, dt, "grafieken/exp4/")
+simulatie_v2.simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_init, n_e_init, "grafieken/exp4/")
