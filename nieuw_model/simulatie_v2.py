@@ -141,8 +141,8 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
             alpha_e[i] = alpha_p[i] * i_gb
             n_e[i+1] = n_e[i] + alpha_e[i] * dt * 0.1
         else:
-            alpha_p[i] = M_prop/(2*np.pi*I_prop)
-            alpha_e[i] = M_b/(2*np.pi*I_eng)
+            alpha_p[i] = M_prop[i]/(2*np.pi*I_prop)
+            alpha_e[i] = M_b[i]/(2*np.pi*I_eng)
             n_e[i+1] = n_e[i] + alpha_e[i] * dt
             n_p[i+1] = n_p[i] + alpha_p[i] * dt
 
@@ -176,31 +176,33 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     if not os.path.exists(plotpath):
         os.makedirs(plotpath)
 
+    t_gap = int(5/dt)
+
     fig = plt.figure(figsize=(10, 13.5))
     ax1 = fig.add_subplot(4, 1, 1)  # fig.add_subplot(#rows, #cols, #plot)
     #shipspeed
-    ax1.plot(time[5:sim_length-5], v_s[5:sim_length-5])
+    ax1.plot(time[t_gap:sim_length-t_gap], v_s[t_gap:sim_length-t_gap])
     ax1.set(title='Ship speed',
             ylabel='Ship speed [m/s]',
             xlabel='Time [s]')
     ax1.grid()
     # distance traveled
     ax2 = fig.add_subplot(4, 1, 2)  # fig.add_subplot(#rows, #cols, #plot)
-    ax2.plot(time[5:sim_length-5], dist_travelled[5:sim_length-5])
+    ax2.plot(time[t_gap:sim_length-t_gap], dist_travelled[t_gap:sim_length-t_gap])
     ax2.set(title='Ship Distance Travelled',
             ylabel='Distance travelled [m]',
             xlabel='Time [s]')
     ax2.grid()
     # brandstofverbruik
     ax3 = fig.add_subplot(4, 1, 3)  # fig.add_subplot(#rows, #cols, #plot)
-    ax3.plot(time[5:sim_length-5], fuel_used[5:sim_length-5])
+    ax3.plot(time[t_gap:sim_length-t_gap], fuel_used[t_gap:sim_length-t_gap])
     ax3.set(title='Fuel Consumption over Time',
             ylabel='fuel consumption [g]',
             xlabel='Time [s]')
     ax3.grid()
     # fuelrack
     ax4 = fig.add_subplot(4, 1, 4)
-    ax4.plot(time[5:sim_length-5], X[5:sim_length-5]*100)
+    ax4.plot(time[t_gap:sim_length-t_gap], X[t_gap:sim_length-t_gap]*100)
     ax4.set(title='Fuel Rack over Time',
             ylabel='Fuel rack [%]',
             xlabel='Time [s]')
@@ -209,8 +211,8 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     fig.savefig(plotpath + "resultaat_vaarsim_mt1457.pdf")
 
     fig6, ax6 = plt.subplots()
-    ax6.plot(time[5:sim_length-5], n_e[5:sim_length-5], label="Engine RPS")
-    ax6.plot(time[5:sim_length-5], n_p[5:sim_length-5], label="Propeller RPS")
+    ax6.plot(time[t_gap:sim_length-t_gap], n_e[t_gap:sim_length-t_gap], label="Engine RPS")
+    ax6.plot(time[t_gap:sim_length-t_gap], n_p[t_gap:sim_length-t_gap], label="Propeller RPS")
     ax6.set(title='RPS over Time',
             xlabel='Time [s]',
             ylabel='RPS [Hz]')
@@ -220,7 +222,7 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     fig6.savefig(plotpath + "n_p-n_e.pdf")
 
     fig7, ax7 = plt.subplots()
-    ax7.plot(v_s[5:sim_length-5], R[5:sim_length-5]/1000)
+    ax7.plot(v_s[t_gap:sim_length-t_gap], R[t_gap:sim_length-t_gap]/1000)
     ax7.set(title='Resistance over ship velocity',
             xlabel='Ship velocity [m/s]',
             ylabel='Resistance [kN]')
@@ -229,7 +231,7 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     fig7.savefig(plotpath + "Snelheid-weerstand.pdf")
 
     fig8, ax8 = plt.subplots()
-    ax8.plot(v_a[5:sim_length-5], F_prop[5:sim_length-5]/1000)
+    ax8.plot(v_a[t_gap:sim_length-t_gap], F_prop[t_gap:sim_length-t_gap]/1000)
     ax8.set(title='Thrust over advance velocity',
             xlabel='Advance Velocity [m/s]',
             ylabel='Thrust [kN]')
@@ -238,7 +240,7 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     fig8.savefig(plotpath + "v_advance-thrust.pdf")
 
     fig9, ax9 = plt.subplots()
-    ax9.plot(n_p[5:sim_length-5], M_prop[5:sim_length-5])
+    ax9.plot(n_p[t_gap:sim_length-t_gap], M_prop[t_gap:sim_length-t_gap])
     ax9.set(title='Propellor torque over propellor RPM',
             xlabel='propellor RPS [Hz]',
             ylabel='Torque [kNm]')
@@ -247,7 +249,7 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     fig9.savefig(plotpath + "n_p-M_prop.pdf")
 
     fig10, ax10 = plt.subplots()
-    ax10.plot(n_e[5:sim_length-5], M_b[5:sim_length-5]/1000)
+    ax10.plot(n_e[t_gap:sim_length-t_gap], M_b[t_gap:sim_length-t_gap]/1000)
     ax10.set(title='Engine torque over engine RPM',
             xlabel='RPS [Hz]',
             ylabel='Torque [kNm]')
@@ -256,10 +258,10 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     fig10.savefig(plotpath + "n_e-M_b.pdf")
 
     fig11, ax11 = plt.subplots()
-    ax11.plot(time[5:sim_length-5], P_E[5:sim_length-5]/1000, label="Towing power")
-    ax11.plot(time[5:sim_length-5], P_d[5:sim_length-5]/1000, label="Propeller power")
-    ax11.plot(time[5:sim_length-5], P_b[5:sim_length-5]/1000, label="Brake power")
-    # ax11.plot(time[5:sim_length-5], Q_f[5:sim_length-5]/1000, label="Thermal energy per ignition")
+    ax11.plot(time[t_gap:sim_length-t_gap], P_E[t_gap:sim_length-t_gap]/1000, label="Towing power")
+    ax11.plot(time[t_gap:sim_length-t_gap], P_d[t_gap:sim_length-t_gap]/1000, label="Propeller power")
+    ax11.plot(time[t_gap:sim_length-t_gap], P_b[t_gap:sim_length-t_gap]/1000, label="Brake power")
+    # ax11.plot(time[t_gap:sim_length-t_gap], Q_f[t_gap:sim_length-t_gap]/1000, label="Thermal energy per ignition")
     ax11.set(title='Power over Time',
             xlabel='Time [s]',
             ylabel='Power [kW]')
@@ -269,10 +271,10 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     fig11.savefig(plotpath + "P-t.pdf")
 
     fig12, ax12 = plt.subplots()
-    ax12.plot(time[5:sim_length-5], eta_e[5:sim_length-5]*100, label="Engine efficiency")
-    ax12.plot(time[5:sim_length-5], np.zeros(sim_length-10) + eta_h*100, label="Hull efficiency")
-    # ax12.plot(time[5:sim_length-5], np.zeros(sim_length-10) + eta_TRM*100, label="Transmission efficiency")
-    ax12.plot(time[5:sim_length-5], eta_o[5:sim_length-5]*100, label="Open water propeller efficiency")
+    ax12.plot(time[t_gap:sim_length-t_gap], eta_e[t_gap:sim_length-t_gap]*100, label="Engine efficiency")
+    ax12.plot(time[t_gap:sim_length-t_gap], np.zeros(sim_length-t_gap*2) + eta_h*100, label="Hull efficiency")
+    # ax12.plot(time[t_gap:sim_length-t_gap], np.zeros(sim_length-10) + eta_TRM*100, label="Transmission efficiency")
+    ax12.plot(time[t_gap:sim_length-t_gap], eta_o[t_gap:sim_length-t_gap]*100, label="Open water propeller efficiency")
     ax12.set(title='Efficiency over Time',
             xlabel='Time [s]',
             ylabel='Efficiency [%]')
@@ -282,10 +284,10 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     fig12.savefig(plotpath + "efficiency-time.pdf")
 
     fig13, ax13 = plt.subplots()
-    ax13.plot(P_p[5:sim_length-5], eta_o[5:sim_length-5]*100, label="Open water propeller efficiency")
-    ax13.plot(P_b[5:sim_length-5], eta_e[5:sim_length-5]*100, label="Engine efficiency")
+    ax13.plot(P_p[t_gap:sim_length-t_gap]/1000, eta_o[t_gap:sim_length-t_gap]*100, label="Open water propeller efficiency")
+    ax13.plot(P_b[t_gap:sim_length-t_gap]/1000, eta_e[t_gap:sim_length-t_gap]*100, label="Engine efficiency")
     ax13.set(title='Efficiency over Power',
-            xlabel='Power [W]',
+            xlabel='Power [kW]',
             ylabel='Efficiency [%]')
     ax13.grid()
     ax13.legend()
@@ -293,9 +295,9 @@ def simulation(X_func, Y_func, clutch_func, tmax, dt, v_s_0, n_e_0, plotpath):
     fig13.savefig(plotpath + "efficiency-power.pdf")
 
     fig14, ax14 = plt.subplots()
-    ax14.plot(time[5:sim_length-5], X[5:sim_length-5]*100, color="tab:blue")
+    ax14.plot(time[t_gap:sim_length-t_gap], X[t_gap:sim_length-t_gap]*100, color="tab:blue")
     ax14_2 = ax14.twinx()
-    ax14_2.plot(time[5:sim_length-5], n_e[5:sim_length-5], color="tab:orange")
+    ax14_2.plot(time[t_gap:sim_length-t_gap], n_e[t_gap:sim_length-t_gap], color="tab:orange")
     ax14.set(title='Fuel rack and RPM over time')
     ax14.set_xlabel('Time [s]')
     ax14.set_ylabel('Fuel rack [%]', color="tab:blue")
